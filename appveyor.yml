@@ -1,0 +1,16 @@
+image: ubuntu-18.04-amd64
+
+build:
+  verbosity: detailed
+
+artifacts:
+  - path: "build/libs/*.jar"
+
+build_script:
+  - sh: ./gradlew clean assemble
+
+test_script:
+  - sh: ./gradlew check
+
+on_finish:
+  - sh: find "$APPVEYOR_BUILD_FOLDER" -type f -name 'TEST*.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.cloudlab.zhaw.ch/api/testresults/junit/$APPVEYOR_JOB_ID"
